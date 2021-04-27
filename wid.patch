@@ -1,0 +1,37 @@
+diff --unified --recursive --text tabbed/tabbed.c tabbed-new/tabbed.c
+--- tabbed/tabbed.c	2021-04-27 14:10:10.977220160 +0700
++++ tabbed-new/tabbed.c	2021-04-27 14:13:36.088048919 +0700
+@@ -169,6 +169,8 @@
+ static char **cmd;
+ static char *wmname = "tabbed";
+ static const char *geometry;
++static int use_wid;
++static int wid;
+ 
+ char *argv0;
+ 
+@@ -1040,8 +1042,11 @@
+ 	                            DefaultDepth(dpy, screen));
+ 	dc.gc = XCreateGC(dpy, root, 0, 0);
+ 
+-	win = XCreateSimpleWindow(dpy, root, wx, wy, ww, wh, 0,
+-	                          dc.norm[ColFG].pixel, dc.norm[ColBG].pixel);
++	if (use_wid)
++		win = wid;
++	else
++		win = XCreateSimpleWindow(dpy, root, wx, wy, ww, wh, 0,
++								dc.norm[ColFG].pixel, dc.norm[ColBG].pixel);
+ 	XMapRaised(dpy, win);
+ 	XSelectInput(dpy, win, SubstructureNotifyMask | FocusChangeMask |
+ 	             ButtonPressMask | ExposureMask | KeyPressMask |
+@@ -1337,6 +1342,10 @@
+ 		die("tabbed-"VERSION", © 2009-2016 tabbed engineers, "
+ 		    "see LICENSE for details.\n");
+ 		break;
++	case 'w':
++		use_wid = True;
++		wid = strtol(EARGF(usage()), NULL, 0);
++		break;
+ 	default:
+ 		usage();
+ 		break;
